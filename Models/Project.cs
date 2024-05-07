@@ -21,5 +21,7 @@ public partial class Project
 
     public bool? IsDeleted { get; set; }
 
-    public int? ActivitiesId { get; set; }
+    public virtual ICollection<Activity> Activities { get; set; } = new List<Activity>();
+
+    public virtual ICollection<User> Users { get; set; } = new List<User>();
 }

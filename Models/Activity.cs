@@ -7,6 +7,8 @@ public partial class Activity
 {
     public int Id { get; set; }
 
+    public int? ActivityHeaderId { get; set; }
+
     public string? Name { get; set; }
 
     public string? Detail { get; set; }
@@ -20,4 +22,12 @@ public partial class Activity
     public DateTime? UpdateDate { get; set; }
 
     public bool? IsDeleted { get; set; }
+
+    public int? ProjectId { get; set; }
+
+    public virtual Activity? ActivityHeader { get; set; }
+
+    public virtual ICollection<Activity> InverseActivityHeader { get; set; } = new List<Activity>();
+
+    public virtual Project? Project { get; set; }
 }

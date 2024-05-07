@@ -5,20 +5,20 @@ using backend_ProjectManagement.Models;
 
 namespace backend_ProjectManagement.Data;
 
-public partial class DataBaseContext : DbContext
+public partial class DatabaseContext : DbContext
 {
-    public DataBaseContext()
+    public DatabaseContext()
     {
     }
 
-    public DataBaseContext(DbContextOptions<DataBaseContext> options)
+    public DatabaseContext(DbContextOptions<DatabaseContext> options)
         : base(options)
     {
     }
 
     public virtual DbSet<Activity> Activities { get; set; }
 
-    public virtual DbSet<File> Files { get; set; }
+    public virtual DbSet<FileUpload> FileUploads { get; set; }
 
     public virtual DbSet<Project> Projects { get; set; }
 
@@ -34,20 +34,32 @@ public partial class DataBaseContext : DbContext
     {
         modelBuilder.Entity<Activity>(entity =>
         {
+            entity.HasIndex(e => e.Id, "IX_Activities");
+
             entity.Property(e => e.Id).HasColumnName("ID");
+            entity.Property(e => e.ActivityHeaderId).HasColumnName("ActivityHeaderID");
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
             entity.Property(e => e.Detail).HasMaxLength(50);
             entity.Property(e => e.EndDate).HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.ProjectId).HasColumnName("ProjectID");
             entity.Property(e => e.StartDate).HasColumnType("datetime");
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.ActivityHeader).WithMany(p => p.InverseActivityHeader)
+                .HasForeignKey(d => d.ActivityHeaderId)
+                .HasConstraintName("FK_Activities_Activities");
+
+            entity.HasOne(d => d.Project).WithMany(p => p.Activities)
+                .HasForeignKey(d => d.ProjectId)
+                .HasConstraintName("FK_Activities_Project");
         });
 
-        modelBuilder.Entity<File>(entity =>
+        modelBuilder.Entity<FileUpload>(entity =>
         {
             entity
                 .HasNoKey()
-                .ToTable("File");
+                .ToTable("FileUpload");
 
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
             entity.Property(e => e.FileName).HasMaxLength(50);
@@ -63,7 +75,6 @@ public partial class DataBaseContext : DbContext
             entity.ToTable("Project");
 
             entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.ActivitiesId).HasColumnName("ActivitiesID");
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
             entity.Property(e => e.Detail).HasMaxLength(50);
             entity.Property(e => e.EndDate).HasColumnType("datetime");
@@ -90,17 +101,17 @@ public partial class DataBaseContext : DbContext
             entity.ToTable("User");
 
             entity.Property(e => e.Id).HasColumnName("ID");
-            entity.Property(e => e.ActivitiesId).HasColumnName("ActivitiesID");
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
             entity.Property(e => e.Password).HasMaxLength(50);
             entity.Property(e => e.Pin)
                 .HasMaxLength(10)
                 .IsFixedLength();
-            entity.Property(e => e.ProjectOwener)
-                .HasMaxLength(10)
-                .IsFixedLength();
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
             entity.Property(e => e.Username).HasMaxLength(50);
+
+            entity.HasOne(d => d.ProjectOwenerNavigation).WithMany(p => p.Users)
+                .HasForeignKey(d => d.ProjectOwener)
+                .HasConstraintName("FK_User_Project");
         });
 
         OnModelCreatingPartial(modelBuilder);

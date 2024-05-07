@@ -19,7 +19,7 @@ public partial class User
 
     public bool? IsDeleted { get; set; }
 
-    public string? ProjectOwener { get; set; }
+    public int? ProjectOwener { get; set; }
 
-    public int? ActivitiesId { get; set; }
+    public virtual Project? ProjectOwenerNavigation { get; set; }
 }
