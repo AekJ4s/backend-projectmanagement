@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\aek\\Desktop\\backend-ProjectManagement\\backend-ProjectManagement.csproj": {}
+    "C:\\Users\\aek\\Desktop\\backend-projectmanagement\\backend-ProjectManagement.csproj": {}
   },
   "projects": {
-    "C:\\Users\\aek\\Desktop\\backend-ProjectManagement\\backend-ProjectManagement.csproj": {
+    "C:\\Users\\aek\\Desktop\\backend-projectmanagement\\backend-ProjectManagement.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\aek\\Desktop\\backend-ProjectManagement\\backend-ProjectManagement.csproj",
+        "projectUniqueName": "C:\\Users\\aek\\Desktop\\backend-projectmanagement\\backend-ProjectManagement.csproj",
         "projectName": "backend-ProjectManagement",
-        "projectPath": "C:\\Users\\aek\\Desktop\\backend-ProjectManagement\\backend-ProjectManagement.csproj",
+        "projectPath": "C:\\Users\\aek\\Desktop\\backend-projectmanagement\\backend-ProjectManagement.csproj",
         "packagesPath": "C:\\Users\\aek\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\aek\\Desktop\\backend-ProjectManagement\\obj\\",
+        "outputPath": "C:\\Users\\aek\\Desktop\\backend-projectmanagement\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

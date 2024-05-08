@@ -1,0 +1,97 @@
+using backend_ProjectManagement.Data;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+
+namespace backend_ProjectManagement.Models
+{
+    public class UserMetadata
+    {
+    public int Id { get; set; }
+
+    public string? Username { get; set; }
+
+    public string? Password { get; set; }
+
+    public string? Pin { get; set; }
+
+    public DateTime? CreateDate { get; set; }
+
+    public DateTime? UpdateDate { get; set; }
+
+    public bool? IsDeleted { get; set; }
+
+    public int? ProjectOwener { get; set; }
+
+    public virtual Project? ProjectOwenerNavigation { get; set; }
+    }
+
+    public class UserCreate
+    {
+        public string? Username { get; set; }
+
+        public string? Password { get; set; }
+
+        public string? Pin { get; set; }
+
+    }
+
+    [MetadataType(typeof(UserMetadata))]
+
+    public partial class User
+    {
+        public static User Create(DatabaseContext db, User user)
+        {
+            user.CreateDate = DateTime.Now;
+            user.UpdateDate = DateTime.Now;
+            user.IsDeleted = false;
+            db.Users.Add(user);
+            db.SaveChanges();
+
+            return user;
+        }
+
+        public static List<User> GetAll(DatabaseContext db)
+        {
+            List<User> returnThis = db.Users.Where(q => q.IsDeleted != true).ToList();
+            return returnThis;
+        }
+
+        
+        public static User Update(DatabaseContext db, User user)
+        {
+            user.UpdateDate = DateTime.Now;
+            db.Entry(user).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return user;
+        }
+
+        public static User GetById(DatabaseContext db, int id)
+        {
+            User? returnThis = db.Users.Where(q => q.Id == id && q.IsDeleted != true).FirstOrDefault();
+            return returnThis ?? new User();
+        }
+
+        public static User Delete(DatabaseContext db, int id)
+        {
+            User user = GetById(db, id);
+            user.IsDeleted = true;
+            // db.Employees.Remove(employee); เป็นวิธีการลบแบบให้หายไปเลย
+            db.Entry(user).State = EntityState.Modified; // Soft Delete
+            db.SaveChanges();
+
+            return user;
+        }
+
+    }
+
+
+
+
+
+
+}

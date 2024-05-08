@@ -21,11 +21,12 @@ public class ActivityController : ControllerBase
     public class ActivityCreateRequest
     {
        
+
         public int? ProjectId { get; set; } 
 
         public int? ActivityHeaderId { get; set; }
 
-        public string? Name { get; set; }
+        public string? Name { get; set; } 
 
         public virtual ICollection<Activity> InverseActivityHeader { get; set; } = new List<Activity>(); 
     }
