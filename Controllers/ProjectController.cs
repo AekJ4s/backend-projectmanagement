@@ -43,7 +43,6 @@ public class ProjectController : ControllerBase
             foreach (Activity activity in DataOfProject.Activities)
             {
                 Activity.TakeActivity (DataOfProject.Activities, _db);
-                
             }
         }
         else
@@ -53,7 +52,8 @@ public class ProjectController : ControllerBase
 
         try
         {
-            return StatusCode(200);
+            return Ok(DataOfProject);
+            
         }
         catch (Exception e)
         {
