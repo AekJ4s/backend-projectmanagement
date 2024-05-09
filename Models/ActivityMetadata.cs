@@ -44,6 +44,11 @@ namespace backend_ProjectManagement.Models
 
     public partial class Activity
     {
+         public static Activity GetByActivityId(DatabaseContext db, int id)
+        {
+            Activity? returnThis = db.Activities.Where(q => q.Id == id && q.IsDeleted != true).FirstOrDefault();
+            return returnThis ?? new Activity();
+        }
         public static Activity Create(DatabaseContext db, Activity activity)
         {
             activity.CreateDate = DateTime.Now;
@@ -74,10 +79,19 @@ namespace backend_ProjectManagement.Models
                 activityOrigin.Add(HeadData);
 
             }
-
             return;
         }
 
+        public static void TakeActivity(List<Activity> activity,DatabaseContext _db){
+            foreach(Activity Data in activity){
+                
+                Data.InverseActivityHeader = _db.Activities.Where(i => i.ActivityHeaderId == Data.Id && i.IsDeleted != true).AsNoTracking().ToList();
+                if(Data.InverseActivityHeader.Count > 0){
+                    TakeActivity(Data.InverseActivityHeader,_db);
+                }
+            }
+            return;
+        }
 
     }
 

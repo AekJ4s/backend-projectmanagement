@@ -21,7 +21,7 @@ public partial class Activity
 
     public virtual Activity? ActivityHeader { get; set; }
 
-    public virtual ICollection<Activity> InverseActivityHeader { get; set; } = new List<Activity>();
+    public virtual List<Activity> InverseActivityHeader { get; set; } = new List<Activity>();
 
     public virtual Project? Project { get; set; }
 }

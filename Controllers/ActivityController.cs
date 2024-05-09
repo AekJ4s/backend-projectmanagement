@@ -42,6 +42,20 @@ public class ActivityController : ControllerBase
         db.SaveChanges(); // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
         return activity;
     }
+
+     [HttpGet("GetBy/{id}", Name = "GetAllActivity")]
+
+    public ActionResult GetAllActivity(int id)
+    {
+        Activity activity = Activity.GetByActivityId(_db, id);
+        if (activity == null)
+        {
+        return NotFound(); // ถ้าไม่พบโปรเจคให้ส่งคำตอบ 404 Not Found
+        }
+
+        return Ok(activity);
+        
+    }
 }
 
     

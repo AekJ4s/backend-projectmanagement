@@ -29,34 +29,34 @@ namespace backend_ProjectManagement.Models
         public int? ActivitiesId { get; set; }
     }
 
-     public class ProjectCreate
+    public class ProjectCreate
     {
 
-    public string? Name { get; set; }
+        public string? Name { get; set; }
 
-    public string? Detail { get; set; }
+        public string? Detail { get; set; }
 
-    public DateTime? StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
-    public DateTime? EndDate { get; set; }
-    public List<Activity> Activities { get; set; } = new List<Activity>();
+        public DateTime? EndDate { get; set; }
+        public List<Activity> Activities { get; set; } = new List<Activity>();
 
     }
 
     public struct ProjectUpdate
 
-        {
+    {
 
-            public int Id { get; set; }
-            public string? Name { get; set; }
+        public int Id { get; set; }
+        public string Name { get; set; }
 
-            public string? Detail { get; set; }
+        public string? Detail { get; set; }
 
-            public DateTime? StartDate { get; set; }
+        public DateTime? StartDate { get; set; }
 
-            public DateTime? EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
-        }
+    }
 
 
 
@@ -81,20 +81,21 @@ namespace backend_ProjectManagement.Models
             return returnThis;
         }
 
-        
+
         public static Project Update(DatabaseContext db, Project project)
         {
             project.UpdateDate = DateTime.Now;
             db.Entry(project).State = EntityState.Modified;
             db.SaveChanges();
-
             return project;
         }
 
         public static Project GetById(DatabaseContext db, int id)
         {
-            Project? returnThis = db.Projects.Where(q => q.Id == id && q.IsDeleted != true).FirstOrDefault();
-            return returnThis ?? new Project();
+            Project? project = db.Projects
+                                    .Include(p => p.Activities) // Eager loading ข้อมูลกิจกรรม
+                                    .FirstOrDefault(q => q.Id == id && q.IsDeleted != true);
+            return project ?? new Project(); // คืนค่าโปรเจคพร้อมกับข้อมูลกิจกรรมหรือสร้างโปรเจคใหม่หากไม่พบ
         }
 
         public static Project Delete(DatabaseContext db, int id)
