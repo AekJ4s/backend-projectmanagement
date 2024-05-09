@@ -44,7 +44,12 @@
                     "inverseActivityHeader": [
                         {
                             "name": "Act1.2",
-                            "inverseActivityHeader": []
+                            "inverseActivityHeader": [
+                                {
+                                    "name": "Act1.3",
+                                    "inverseActivityHeader": []
+                                }
+                            ]
                         }
                     ]
                 }
