@@ -1,40 +1,12 @@
-[
-    {
-        "Name": "Act1",
-        "ProjectID": 14,
-        "InverseActivityHeader": [
-            {
-                "Name": "Act1.1",
-                "ProjectID": 14
-            }
-        ]
-    },
-    {
-        "Name": "Act2",
-        "ProjectID": 14,
-        "InverseActivityHeader": [
-            {
-                "Name": "Act2.1",
-                "ProjectID": 14
-            },
-            {
-                "Name": "Act2.2",
-                "ProjectID": 14,
-                "InverseActivityHeader": [
-                    {
-                        "Name": "Act2.2.1",
-                        "ProjectID": 14
-                    }
-                ]
-            }
-        ]
-    }
-]
 
 
 
 {
     "name": "ActProject",
+    "detail": "First Project Tester",
+    "startdate":"2024-05-09T04:10:03.794Z",
+    "enddate":"2024-06-09T04:10:03.794Z",
+
     "activities": [
         {
             "name": "Act1",

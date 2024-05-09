@@ -2,10 +2,7 @@ using backend_ProjectManagement.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-
 using backend_ProjectManagement.Models;
-using Azure;
 [ApiController]
 
 [Route("projects")]
@@ -20,9 +17,9 @@ public class ProjectController : ControllerBase
         _logger = logger;
     }
 
-    
 
- [HttpGet(Name = "ShowAllProjects")]
+
+    [HttpGet(Name = "ShowAllProjects")]
 
     public ActionResult GetAll()
     {
@@ -32,28 +29,57 @@ public class ProjectController : ControllerBase
         return Ok(projects);
     }
 
+    [HttpGet("GetBy/{id}", Name = "GetProductId")]
 
-    [HttpPost("CreateProject",Name = "")]
-
-    public ActionResult CreateProject([FromBody] ProjectCreate projectCreate)
+    public ActionResult GetProductById(int id)
     {
-       
-
-        Project project = new Project
-        {
-            Name = projectCreate.Name,
-            Detail = projectCreate.Detail,
-            StartDate = projectCreate.StartDate,
-            EndDate = projectCreate.EndDate,
-        };
-        project.CreateDate = DateTime.Now;
-        project.UpdateDate = DateTime.Now;
-        project = Project.Create(_db, project);
-        return Ok(project);
+        Project product = Project.GetById(_db, id);
+        return Ok(product);
     }
 
-   
-        
+
+    [HttpPost("CreateProject", Name = "")]
+
+    public ActionResult<Response> Create(ProjectCreate projectCreate)
+    {
+        Project project = new Project          // สร้างโปรเจ็คใหม่
+        {
+            Name = projectCreate.Name,     // รับค่าชื่อจาก projectCreate.Name
+            Detail = projectCreate.Detail, // รับค่าชื่อจาก projectCreate.Detail
+            StartDate = projectCreate.StartDate,  // รับค่าชื่อจาก projectCreate.StartDate
+            EndDate = projectCreate.EndDate,     // รับค่าชื่อจาก projectCreate.EndDate
+        };
+        // SaveDATA
+        try
+        {
+            foreach (Activity activity in projectCreate.Activities)
+            {
+                Activity.SendActivities(project, project.Activities, projectCreate.Activities);
+                Project.Create(_db, project);
+            }
+
+            _db.SaveChanges();
+            return new Response
+            {
+                Code = 200,
+                Message = "Success",
+                Data = project
+            };
+        }
+        catch
+        {
+            return new Response
+            {
+                Code = 500,
+                Message = "Internal Server Error",
+                Data = null
+            };
+        }
+
+    }
+
+
+
     [HttpPut(Name = "ProjectUpdate")]
 
     public ActionResult PUT([FromBody] ProjectUpdate projectUpdate)
@@ -69,21 +95,18 @@ public class ProjectController : ControllerBase
         bool employeeExists = _db.Projects.Any(e => e.Id == project.Id && e.IsDeleted != true);
         int IntofData = _db.Projects.Where(e => e.Id == project.Id).AsNoTracking().ToList().Count();
 
-        
+
         if (IntofData > 0)
         {
-            Project DateProject = _db.Projects.Where(e =>e.Id == project.Id).AsNoTracking().ToList().First();
-            
-             project.Name = (project.Name == null || project.Name == "string") ? DateProject.Name : project.Name;
-             
-             project.Detail = (project.Detail == null || project.Detail == "string") ? DateProject.Detail : project.Detail;
+            Project DateProject = _db.Projects.Where(e => e.Id == project.Id).AsNoTracking().ToList().First();
 
-             project.StartDate = (project.StartDate == null ) ? DateProject.StartDate : project.StartDate;
+            project.Name = (project.Name == null || project.Name == "string") ? DateProject.Name : project.Name;
 
-             project.EndDate = (project.EndDate == null ) ? DateProject.EndDate : project.EndDate;
+            project.Detail = (project.Detail == null || project.Detail == "string") ? DateProject.Detail : project.Detail;
 
+            project.StartDate = (project.StartDate == null) ? DateProject.StartDate : project.StartDate;
 
-
+            project.EndDate = (project.EndDate == null) ? DateProject.EndDate : project.EndDate;
 
             project.IsDeleted = DateProject.IsDeleted;
             project.CreateDate = DateProject.CreateDate;
@@ -108,22 +131,12 @@ public class ProjectController : ControllerBase
         return Ok(StatusCode(200));
     }
 
-    [HttpDelete(Name ="DeleteProject")]
+    [HttpDelete(Name = "DeleteProject")]
 
     public ActionResult DeleteProduct(int id)
     {
         Project product = Project.Delete(_db, id);
         return Ok(product);
     }
-
-
-     [HttpGet("GetBy/{id}", Name = "GetProject")]
-
-    public ActionResult GetProductById(int id)
-    {
-        Project project = Project.GetById(_db, id);
-        return Ok(project);
-    }
-
 
 }

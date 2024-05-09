@@ -29,19 +29,17 @@ namespace backend_ProjectManagement.Models
         public int? ActivitiesId { get; set; }
     }
 
-    public class ProjectCreate
+     public class ProjectCreate
     {
 
+    public string? Name { get; set; }
 
-        public string? Name { get; set; }
+    public string? Detail { get; set; }
 
-        public string? Detail { get; set; }
+    public DateTime? StartDate { get; set; }
 
-        public DateTime? StartDate { get; set; }
-
-        public DateTime? EndDate { get; set; }
-
-
+    public DateTime? EndDate { get; set; }
+    public List<Activity> Activities { get; set; } = new List<Activity>();
 
     }
 

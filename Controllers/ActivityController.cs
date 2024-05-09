@@ -33,42 +33,15 @@ public class ActivityController : ControllerBase
 
     [HttpPost("Create" , Name = "CreateActivities")]
 
-   public ActionResult<Response> Create(List<ActivityCreateRequest> activitiesRequest)
-   {
-    List<Activity> activities = new List<Activity>();
-    activities = activitiesRequest.Select(a => new Activity
+    public static Activity Create(DatabaseContext db, Activity activity)
     {
-        ProjectId = a.ProjectId,
-        ActivityHeaderId = a.ActivityHeaderId,
-        Name = a.Name,
-        InverseActivityHeader = a.InverseActivityHeader
-    }).ToList();
-    
-    try{
-        foreach (Activity activity in activities)
-        {
-            Activity.SetActivitiesCreate(activity);
-            Activity.Create(_db,activity);
-        }
-
-        _db.SaveChanges();
-        return new Response
-        {
-            Code = 200,
-            Message = "Success",
-            Data = activities
-        };
+        activity.CreateDate = DateTime.Now;
+        activity.UpdateDate = DateTime.Now;
+        activity.IsDeleted = false;
+        db.Activities.Add(activity);
+        db.SaveChanges(); // บันทึกการเปลี่ยนแปลงลงในฐานข้อมูล
+        return activity;
     }
-    catch{
-        return new Response
-        {
-            Code = 500,
-            Message = "Internal Server Error",
-            Data = null
-        };
-    }
-
-   }
 }
 
     
