@@ -51,15 +51,21 @@ namespace backend_ProjectManagement.Models
             return returnThis ?? new Activity();
         }
         public static void Create(Activity parent,Project project,DatabaseContext db, Activity activity)
-
+        // ฟังก์ชั่น Create จะรับค่า กิจกรรมตัวแม่ (ตัวที่แล้วอ่ะ) , กับตัวโปรเจคปัจจุบัน , DataBase , และ กิจกรรมย่อยตัวนี้
         {
+            // กิจกรรมย่อยตัวนี้ จะมี Activity Header เป็น แม่ หรือเอาข้อมูลของแม่มาใส่นั่นเอง
             activity.ActivityHeader = parent;
+            // กิจกรรมย่อยตัวนี้ ถูกกำหนดให้อยู่ในโปรเจคตัวที่ส่งเข้ามา แบบชี้ว่าเป็นกิจกรรมย่อยของโปรเจคนี้นะไรงี้
             activity.Project = project;
+            // อัพเดตเวลาปกติเลย แต่อันนี้เวลาที่เราสร้างกิจกรรมย่อยใหม่ก็ต้องไม่เท่ากับตัวโปรเจคเนอะในกรณีที่ไม่ได้สร้างมาพร้อมกัน
             activity.CreateDate = DateTime.Now;
             activity.UpdateDate = DateTime.Now;
             activity.IsDeleted = false;
-            // ยังไม่ถูกสร้าง เราจะไปทำ 1.ยัด HeaderID ให้มัน
+            
+            //อันนี้คือว่าเราจะไปเช็คว่าในกิจกรรมย่อยตัวนี้ ที่กำลังทำอยู่เนี่ย มีกิจกรรมย่อยของมันอีกไหมเนอะ เพราะว่าต้องทำตัวเล็กด้วยถ้าตัวเล็กถูกสร้าง
+            //ก็คือเราจะวนโดยใช้ค่า newActivity ไปวนหาข้อมูลใน กิจกรรมย่อยตัวนี้ในฟีลล์ InverseActivityHeader (ก็คือฟีลล์ไว้สำหรับเก็บข้อมูลตัวลูกนั่นแหละ)
                 foreach(Activity newActivity in activity.InverseActivityHeader){
+                    //ก็ถ้ามีเราก็จะโยนกลับไปเพื่อให้สร้างลูกมันไปด้วยพร้อมๆกัน ก็จะโยนจนกว่าลูกจะหมดก็จะหลุด foreach อ่ะเพราะมันทำจนข้อมูลหมด
                 Activity.Create(activity,project,db, newActivity);
                 }
           
@@ -91,25 +97,33 @@ namespace backend_ProjectManagement.Models
 
         public static void TakeActivity(Activity? parent,Project project,Activity activity, DatabaseContext _db)
         {
+            //กิจกรรมย่อยนี้ถูกสร้างขึ้นมาหรือยัง? ถ้ายังไม่ถูกสร้าง ( activity Id จะเป็น 0 )
             if (activity.Id == 0)
-            { // โดนสร้างยัง ?
+            { 
+                // โยนไปให้ฟังก์ชั่น Create โดยส่งค่า กิจกรรมตัวแม่ , โปรเจคตัวแม่ , ส่งกิจกรรมย่อยไป , ส่ง DataBase ไป
                 Activity.Create(parent,project,_db, activity);
+
+                //เมื่อออกจากฟังก์ชั่น Create แล้วจะนำข้อมูล Activities ที่ถูกสร้างขึ้นมามาเพิ่มใน DataBase
                 _db.Activities.Add(activity);                
             }
-            else
+            else //ถ้ากิจกรรมนี้เคยถูกสร้างขึ้นมาอยู่แล้ว เราจะส่งไปให้อัพเดตแทนที่จะสร้างใหม่
             {
-                // โยนไปให้หาลูกจนถึงตัวสุดท้าย
+                // โยนกิจกรรมตัวแม่ไปหาก่อนว่ามีลูกไหม เพราะว่าเราต้องอัพเดตตัวลูกก่อนถึงจะอัพเดตตัวแม่ได้
                 foreach (Activity Data in activity.InverseActivityHeader)
                 {
+                    //ฟังก์ชั่นสำหรับหาลูกของกิจกรรม โดยเราจะส่งกิจกรรมย่อย , ตัวโปรเจค , ตัวข้อมูลในฟีวล์ข้อมูล InverseActivityHeader(หรือกิจกรรมตัวลูกนั่นเอง) เข้าไป และส่ง DataBase
                     TakeActivity(activity,project,Data,_db);
                 }
-                // อัพเดตทุกอย่่างในจุดนี้
+                // เมื่อเสร็จในการอัพเดตทุกตัวจะออกมาทำบรรทัดต่อไปหลังจากนี้
+
+                // ค้นหาข้อมูลในฟีลล์ Activities ตาม id ของตัวกิจกรรม
                 Activity? dataUpdate = _db.Activities.Find(activity.Id);
                 
+                // ถ้าข้อมูลที่ไปหามามีข้อมูลอยู่ก็จะนำข้อมูลมาอัพเดต ชื่อ ,วันที่อัพเดต,และ IsDeleted โดยอิงจากข้อมูลปัจจุบัน
                 if(dataUpdate != null){
                 dataUpdate.Name = activity.Name;
                 dataUpdate.UpdateDate = DateTime.Now;
-
+                dataUpdate.IsDeleted = activity.IsDeleted;
                 _db.Update(dataUpdate);
                 _db.SaveChanges();
                 }

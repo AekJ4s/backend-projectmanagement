@@ -125,18 +125,19 @@ public class ProjectController : ControllerBase
         // ค้นหาโปรเจคที่ต้องการอัพเดทโดยใช้ ID เพื่อนำไปแก้ไข
 
         Project? DataOfProject = _db.Projects.Find(NewData.Id);
-
+        //ถ้ามีข้อมูล
         if (NewData != null)
         {
-            // ให้กิจกรรมที่ดึงมามีโครงสร้างลูกซ้อนถูกอัพเดท
+            // ให้นำข้อมูลไปหากิจกรรมภายใน
             foreach (Activity activity in NewData.Activities)
             {
+                //ส่งข้อมูลกิจกรรมให้ไปค้นหากินกรรมย่อย
                 Activity.TakeActivity(null,DataOfProject,activity, _db);
             }
-
+            // ถ้ามีข้อมูลโปรเจค
             if (DataOfProject != null)
             {
-                // ตรวจสอบและอัพเดทข้อมูลโปรเจค
+                // ตรวจสอบฟีลแต่ละฟีลและอัพเดตข้อมูล
                 DataOfProject.Name = (string.IsNullOrEmpty(NewData.Name) || NewData.Name == "string") ? DataOfProject.Name : NewData.Name;
                 DataOfProject.Detail = (string.IsNullOrEmpty(NewData.Detail) || NewData.Detail == "string") ? DataOfProject.Detail : NewData.Detail;
                 DataOfProject.StartDate = (NewData.StartDate == null) ? DataOfProject.StartDate : NewData.StartDate;
