@@ -19,7 +19,5 @@ public partial class User
 
     public bool? IsDeleted { get; set; }
 
-    public int? ProjectOwener { get; set; }
-
-    public virtual Project? ProjectOwenerNavigation { get; set; }
+    public virtual ICollection<Project> Projects { get; set; } = new List<Project>();
 }

@@ -76,8 +76,13 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.Detail).HasMaxLength(50);
             entity.Property(e => e.EndDate).HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(50);
+            entity.Property(e => e.OwnerId).HasColumnName("OwnerID");
             entity.Property(e => e.StartDate).HasColumnType("datetime");
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Owner).WithMany(p => p.Projects)
+                .HasForeignKey(d => d.OwnerId)
+                .HasConstraintName("FK_Project_User");
         });
 
         modelBuilder.Entity<ProjectWithFile>(entity =>
@@ -105,10 +110,6 @@ public partial class DatabaseContext : DbContext
                 .IsFixedLength();
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
             entity.Property(e => e.Username).HasMaxLength(50);
-
-            entity.HasOne(d => d.ProjectOwenerNavigation).WithMany(p => p.Users)
-                .HasForeignKey(d => d.ProjectOwener)
-                .HasConstraintName("FK_User_Project");
         });
 
         OnModelCreatingPartial(modelBuilder);

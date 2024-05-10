@@ -7,6 +7,8 @@ public partial class Project
 {
     public int Id { get; set; }
 
+    public int? OwnerId { get; set; }
+
     public string? Name { get; set; }
 
     public string? Detail { get; set; }
@@ -21,7 +23,7 @@ public partial class Project
 
     public bool? IsDeleted { get; set; }
 
-    public virtual List<Activity> Activities { get; set; } = new List<Activity>();
+    public virtual ICollection<Activity> Activities { get; set; } = new List<Activity>();
 
-    public virtual List<User> Users { get; set; } = new List<User>();
+    public virtual User? Owner { get; set; }
 }

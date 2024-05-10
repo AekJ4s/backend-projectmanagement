@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 
 namespace backend_ProjectManagement.Models
 {
@@ -44,21 +45,26 @@ namespace backend_ProjectManagement.Models
 
     public partial class Activity
     {
-         public static Activity GetByActivityId(DatabaseContext db, int id)
+        public static Activity GetByActivityId(DatabaseContext db, int id)
         {
             Activity? returnThis = db.Activities.Where(q => q.Id == id && q.IsDeleted != true).FirstOrDefault();
             return returnThis ?? new Activity();
         }
-        public static Activity Create(DatabaseContext db, Activity activity)
+        public static void Create(Activity parent,Project project,DatabaseContext db, Activity activity)
+
         {
+            activity.ActivityHeader = parent;
+            activity.Project = project;
             activity.CreateDate = DateTime.Now;
             activity.UpdateDate = DateTime.Now;
             activity.IsDeleted = false;
-            db.Activities.Add(activity);
-            db.SaveChanges();
+            // ยังไม่ถูกสร้าง เราจะไปทำ 1.ยัด HeaderID ให้มัน
+                foreach(Activity newActivity in activity.InverseActivityHeader){
+                Activity.Create(activity,project,db, newActivity);
+                }
+          
+        } 
 
-            return activity;
-        }
         public static void SendActivities(Project project, ICollection<Activity> activityOrigin, ICollection<Activity> activityRecive)
         {
             foreach (Activity Data in activityRecive)  // ไปวนหาค่าภายใน activity 
@@ -73,25 +79,55 @@ namespace backend_ProjectManagement.Models
                     Project = project
                     // รับค่าชื่อ โดยอิงจาก activity.Name
                 };
-
+                //วนสร้างลูกใหม่เรื่อยๆ
                 SendActivities(project, HeadData.InverseActivityHeader, Data.InverseActivityHeader);
 
+                //สร้างลูกในแม่
                 activityOrigin.Add(HeadData);
 
             }
             return;
         }
 
-        public static void TakeActivity(List<Activity> activity,DatabaseContext _db){
+        public static void TakeActivity(Activity? parent,Project project,Activity activity, DatabaseContext _db)
+        {
+            if (activity.Id == 0)
+            { // โดนสร้างยัง ?
+                Activity.Create(parent,project,_db, activity);
+                _db.Activities.Add(activity);                
+            }
+            else
+            {
+                // โยนไปให้หาลูกจนถึงตัวสุดท้าย
+                foreach (Activity Data in activity.InverseActivityHeader)
+                {
+                    TakeActivity(activity,project,Data,_db);
+                }
+                // อัพเดตทุกอย่่างในจุดนี้
+                Activity? dataUpdate = _db.Activities.Find(activity.Id);
+                
+                if(dataUpdate != null){
+                dataUpdate.Name = activity.Name;
+                dataUpdate.UpdateDate = DateTime.Now;
+
+                _db.Update(dataUpdate);
+                _db.SaveChanges();
+                }
+            }
+        }
+
+
+        public static void GetALlActivityinside(ICollection<Activity> activity,DatabaseContext _db){
             foreach(Activity Data in activity){
                 
                 Data.InverseActivityHeader = _db.Activities.Where(i => i.ActivityHeaderId == Data.Id && i.IsDeleted != true).AsNoTracking().ToList();
                 if(Data.InverseActivityHeader.Count > 0){
-                    TakeActivity(Data.InverseActivityHeader,_db);
+                    GetALlActivityinside(Data.InverseActivityHeader,_db);
                 }
             }
             return;
         }
+
 
     }
 

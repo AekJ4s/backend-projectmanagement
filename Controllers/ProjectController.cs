@@ -31,70 +31,85 @@ public class ProjectController : ControllerBase
     }
 
     [HttpGet("GetBy/{id}", Name = "GetProjectID")]
-
     public ActionResult GetProjectID(int id)
     {
+        // ค้นหาโปรเจคจากฐานข้อมูลโดยใช้ Id
         Project? DataOfProject = _db.Projects.Find(id);
 
+        // ตรวจสอบว่าโปรเจคที่ค้นหาพบหรือไม่
         if (DataOfProject != null)
         {
+            // ค้นหากิจกรรมที่เกี่ยวข้องกับโปรเจค
+            DataOfProject.Activities = _db.Activities
+                .Where(useinit => useinit.ProjectId == id && useinit.ActivityHeaderId == null && useinit.IsDeleted != true)
+                .ToList();
 
-            DataOfProject.Activities = _db.Activities.Where(useinit => useinit.ProjectId == id && useinit.ActivityHeaderId == null && useinit.IsDeleted != true).ToList();
+            // วนลูปผ่านกิจกรรมในโปรเจคและเรียกใช้เมธอด TakeActivity
             foreach (Activity activity in DataOfProject.Activities)
             {
-                Activity.TakeActivity (DataOfProject.Activities, _db);
+                Activity.GetALlActivityinside(DataOfProject.Activities, _db); //ไปวนหาว่ามีลูกอีกไหม
             }
         }
         else
         {
+            // หากไม่พบโปรเจคในฐานข้อมูล คืนค่า BadRequest
             return BadRequest();
         }
 
         try
         {
-            return Ok(DataOfProject);
-            
+            // ส่งข้อมูลโปรเจคกลับไปยังไคลเอนต์
+            return Ok(new Response
+            {
+                Code = 200,
+                Message = "Success",
+                Data = DataOfProject
+            }
+            );
         }
         catch (Exception e)
         {
-            //Return 500
-            return StatusCode(500);
+            // หากเกิดข้อผิดพลาดในการส่งข้อมูล คืนค่า StatusCode 500 (Internal Server Error)
+            return (StatusCode(500));
         }
-
     }
 
 
-    [HttpPost("CreateProject", Name = "")]
 
+    [HttpPost("CreateProject", Name = "")]
     public ActionResult<Response> Create(ProjectCreate projectCreate)
     {
-        Project project = new Project          // สร้างโปรเจ็คใหม่
+        // สร้างโปรเจ็คใหม่
+        Project project = new Project
         {
-            Name = projectCreate.Name,     // รับค่าชื่อจาก projectCreate.Name
-            Detail = projectCreate.Detail, // รับค่าชื่อจาก projectCreate.Detail
-            StartDate = projectCreate.StartDate,  // รับค่าชื่อจาก projectCreate.StartDate
-            EndDate = projectCreate.EndDate,     // รับค่าชื่อจาก projectCreate.EndDate
+            Name = projectCreate.Name,        // รับค่าชื่อจาก projectCreate.Name
+            Detail = projectCreate.Detail,    // รับค่ารายละเอียดจาก projectCreate.Detail
+            StartDate = projectCreate.StartDate,  // รับค่าวันที่เริ่มต้นจาก projectCreate.StartDate
+            EndDate = projectCreate.EndDate       // รับค่าวันที่สิ้นสุดจาก projectCreate.EndDate
         };
-        // SaveDATA
+
         try
         {
-            foreach (Activity activity in projectCreate.Activities)
-            {
-                Activity.SendActivities(project, project.Activities, projectCreate.Activities);
-                Project.Create(_db, project);
-            }
+            // สร้างกิจกรรมสำหรับโปรเจ็คใหม่
 
+                Activity.SendActivities(project, project.Activities, projectCreate.Activities);
+            
+
+            // บันทึกโปรเจ็คลงในฐานข้อมูล
+            Project.Create(_db, project);
             _db.SaveChanges();
 
-            return new Response
+            // สร้างข้อมูลการตอบกลับสำหรับการสร้างโปรเจ็คสำเร็จ
+            return Ok(new Response
             {
                 Code = 200,
                 Message = "Success",
                 Data = project
-            };
+            });
         }
         catch
         {
+            // หากเกิดข้อผิดพลาดในการสร้างโปรเจ็ค คืนค่าข้อมูลการตอบกลับสำหรับข้อผิดพลาดภายในเซิร์ฟเวอร์
             return new Response
             {
                 Code = 500,
@@ -102,55 +117,70 @@ public class ProjectController : ControllerBase
                 Data = null
             };
         }
-
     }
-
-
-
     [HttpPut(Name = "ProjectUpdate")]
 
-    public ActionResult UpdateProject([FromBody] ProjectUpdate projectUpdate)
+    public ActionResult<Response> UpdateProjectRequest([FromBody] Project NewData)
     {
+        // ค้นหาโปรเจคที่ต้องการอัพเดทโดยใช้ ID เพื่อนำไปแก้ไข
 
+        Project? DataOfProject = _db.Projects.Find(NewData.Id);
 
-        Project? DataOfProject = _db.Projects.Find(projectUpdate.Id);
-
-        if (DataOfProject != null)
+        if (NewData != null)
         {
-
-            DataOfProject.Activities = _db.Activities.Where(useinit => useinit.ProjectId == projectUpdate.Id && useinit.ActivityHeaderId == null && useinit.IsDeleted != true).ToList();
-            foreach (Activity activity in DataOfProject.Activities)
+            // ให้กิจกรรมที่ดึงมามีโครงสร้างลูกซ้อนถูกอัพเดท
+            foreach (Activity activity in NewData.Activities)
             {
-                Activity.TakeActivity (DataOfProject.Activities, _db);
-                
+                Activity.TakeActivity(null,DataOfProject,activity, _db);
             }
+
+            if (DataOfProject != null)
+            {
+                // ตรวจสอบและอัพเดทข้อมูลโปรเจค
+                DataOfProject.Name = (string.IsNullOrEmpty(NewData.Name) || NewData.Name == "string") ? DataOfProject.Name : NewData.Name;
+                DataOfProject.Detail = (string.IsNullOrEmpty(NewData.Detail) || NewData.Detail == "string") ? DataOfProject.Detail : NewData.Detail;
+                DataOfProject.StartDate = (NewData.StartDate == null) ? DataOfProject.StartDate : NewData.StartDate;
+                DataOfProject.EndDate = (NewData.EndDate == null) ? DataOfProject.EndDate : NewData.EndDate;
+                DataOfProject.UpdateDate = DateTime.Now;
+
+                // บันทึกการอัพเดทลงในฐานข้อมูล
+                Project.Update(_db, DataOfProject);
+                _db.SaveChanges();
+                // ส่งค่าสถานะการอัพเดทเป็น 200 OK
+                return new Response
+                {
+                    Code = 200,
+                    Message = "Success",
+                    Data = DataOfProject
+                };
+           
+            }
+            else
+            return new Response
+                {
+                    Code = 400,
+                    Message = "Bad Request",
+                    Data = null
+                };
             
-            DataOfProject.Name = (projectUpdate.Name == null || projectUpdate.Name == "string") ? DataOfProject.Name : projectUpdate.Name;
-            DataOfProject.Detail = (projectUpdate.Detail == null || projectUpdate.Detail == "string") ? DataOfProject.Name : projectUpdate.Name;
-            DataOfProject.StartDate = (projectUpdate.StartDate == null) ? DataOfProject.StartDate : projectUpdate.StartDate;
-            DataOfProject.EndDate = (projectUpdate.EndDate == null) ? DataOfProject.EndDate : projectUpdate.EndDate;
-            DataOfProject.UpdateDate = DateTime.Now;
-            DataOfProject = Project.Update(_db, DataOfProject);
+           
         }
         else
         {
-            return BadRequest();
+            {
+                // หากไม่พบโปรเจคที่ต้องการอัพเดท ส่งค่า BadRequest
+                return new Response
+                {
+                    Code = 500,
+                    Message = "Not Find Project",
+                    Data = null
+                };
+            }
         }
-
-        try
-        {
-            return StatusCode(200);
-        }
-        catch (Exception e)
-        {
-            //Return 500
-            return StatusCode(500);
-        }
-
     }
 
-    [HttpDelete(Name = "DeleteProject")]
 
+    [HttpDelete(Name = "DeleteProject")]
     public ActionResult DeleteProduct(int id)
     {
         Project product = Project.Delete(_db, id);

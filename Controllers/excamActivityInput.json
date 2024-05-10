@@ -1,12 +1,8 @@
-
-
-
 {
     "name": "ActProject",
     "detail": "First Project Tester",
-    "startdate":"2024-05-09T04:10:03.794Z",
-    "enddate":"2024-06-09T04:10:03.794Z",
-
+    "startdate": "2024-05-09T04:10:03.794Z",
+    "enddate": "2024-06-09T04:10:03.794Z",
     "activities": [
         {
             "name": "Act1",
@@ -49,12 +45,228 @@
         }
     ]
 }
-
-
 //excamfor Update
 {
-    "id":7,
-    "name": "ActPUTEditer",
+    "id": 7,
+    "name": "TestEditInSideAct",
     "detail": "First Tester",
-    "activities": []
+    "activities": [
+        {
+            "name": "EditThisAct",
+            "inverseActivityHeader": []
+        }
+    ]
+}
+
+
+   
+    {
+    "id": 3,
+    "ownerId": null,
+    "name": "ActProject",
+    "detail": "First Project Tester",
+    "startDate": "2024-05-09T04:10:03.793",
+    "endDate": "2024-06-09T04:10:03.793",
+    "createDate": "2024-05-10T11:39:02.517",
+    "updateDate": "2024-05-10T11:39:02.517",
+    "activities": [
+        {
+            "id": 48,
+            "name": "Act1",
+            "activityHeader": null,
+            "inverseActivityHeader": [
+                {
+                    "id": 49,
+                    "name": "Act1.1",
+                    "activityHeader": null,
+                    "inverseActivityHeader": [
+                        {
+                            "id": 50,
+                            "name": "Act1.2",
+                            "activityHeader": null,
+                            "inverseActivityHeader": [
+                                {
+                                    "id": 51,
+                                    "name": "Act1.3",
+                                    "activityHeader": null,
+                                    "inverseActivityHeader": [
+                                        {
+                                            "id": 52,
+                                            "activityHeaderId": 51,
+                                            "name": "Act1.4",
+                                            "activityHeader": null,
+                                            "inverseActivityHeader": [
+                                                {
+                                                    "id": 53,
+                                                    "projectId": 3,
+                                                    "activityHeaderId": 52,
+                                                    "name": "Act1.5",
+                                                    "activityHeader": null,
+                                                    "inverseActivityHeader": [
+                                                        {
+                                                            "id": 54,
+                                                            "projectId": 3,
+                                                            "activityHeaderId": 53,
+                                                            "name": "Act1.6",
+                                                            "activityHeader": null,
+                                                            "inverseActivityHeader": [
+                                                                {
+                                                                    "id": 55,
+                                                                    "projectId": 3,
+                                                                    "activityHeaderId": 54,
+                                                                    "name": "Act1.7",
+                                                                    "activityHeader": null,
+                                                                    "inverseActivityHeader": [],
+                                                                    "project": null
+                                                                }
+                                                            ],
+                                                            "project": null
+                                                        }
+                                                    ],
+                                                    "project": null
+                                                }
+                                            ],
+                                            "project": null
+                                        }
+                                    ],
+                                    "project": null
+                                }
+                            ],
+                            "project": null
+                        }
+                    ],
+                    "project": null
+                }
+            ],
+            "project": null
+        }
+    ],
+    "owner": null
+}
+
+
+
+
+
+    =========
+    {
+    "id": 3,
+    "ownerId": null,
+    "name": "ActProject",
+    "detail": "First Project Tester",
+    "startDate": "2024-05-09T04:10:03.793",
+    "endDate": "2024-06-09T04:10:03.793",
+    "createDate": "2024-05-10T11:39:02.517",
+    "updateDate": "2024-05-10T11:39:02.517",
+    "activities": [
+        {
+            "id": 48,
+            "name": "Act1",
+            "activityHeader": null,
+            "inverseActivityHeader": [
+                {
+                    "id": 49,
+                    "name": "Act1.1",
+                    "activityHeader": null,
+                    "inverseActivityHeader": [
+                        {
+                            "id": 50,
+                            "name": "Act1.2",
+                            "activityHeader": null,
+                            "inverseActivityHeader": [
+                                {
+                                    "id": 51,
+                                    "name": "Act1.3",
+                                    "activityHeader": null,
+                                    "inverseActivityHeader": [
+                                        {
+                                            "id": 52,
+                                            "activityHeaderId": 51,
+                                            "name": "Act1.4",
+                                            "activityHeader": null,
+                                            "inverseActivityHeader": [
+                                                {
+                                                    "id": 53,
+                                                    "projectId": 3,
+                                                    "activityHeaderId": 52,
+                                                    "name": "Actt99999999",
+                                                    "activityHeader": null,
+                                                    "inverseActivityHeader": [
+                                                        {
+                                                            "id": 54,
+                                                            "projectId": 3,
+                                                            "activityHeaderId": 53,
+                                                            "name": "Act1.6",
+                                                            "activityHeader": null,
+                                                            "inverseActivityHeader": [
+                                                                {
+                                                                    "id": 55,
+                                                                    "projectId": 3,
+                                                                    "activityHeaderId": 54,
+                                                                    "name": "Act1.7",
+                                                                    "activityHeader": null,
+                                                                    "inverseActivityHeader": [
+                                                                        {
+                                                                            "id": 0,
+                                                                            "name": "NEW KONG MAI",
+                                                                            "activityHeader": null,
+                                                                            "inverseActivityHeader": [
+                                                                                {
+                                                                                    "id": 0,
+                                                                                    "name": "NEW KONG MAI",
+                                                                                    "activityHeader": null,
+                                                                                    "inverseActivityHeader": [],
+                                                                                    "project": null
+                                                                                }
+                                                                            ],
+                                                                            "project": null
+                                                                        }
+                                                                    ],
+                                                                    "project": null
+                                                                }
+                                                            ],
+                                                            "project": null
+                                                        }
+                                                    ],
+                                                    "project": null
+                                                }
+                                            ],
+                                            "project": null
+                                        }
+                                    ],
+                                    "project": null
+                                }
+                            ],
+                            "project": null
+                        }
+                    ],
+                    "project": null
+                }
+            ],
+            "project": null
+        }
+    ],
+    "owner": null
+}
+
+
+
+
+{
+    "id": 4,
+    "name": "Editer",
+    "detail": "First Project Tester",
+    "startDate": "2024-05-09T04:10:03.793",
+    "endDate": "2024-06-09T04:10:03.793",
+    "activities": [
+        {
+            "name": "Act2",
+            "inverseActivityHeader": [
+                {
+                    "name": "Act2.1",
+                    "inverseActivityHeader": []
+                }
+            ]
+        }
+    ]
 }
