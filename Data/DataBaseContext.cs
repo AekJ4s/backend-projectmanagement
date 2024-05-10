@@ -102,12 +102,11 @@ public partial class DatabaseContext : DbContext
         {
             entity.ToTable("User");
 
+            entity.HasIndex(e => e.Username, "ชื่อห้ามซ้ำ").IsUnique();
+
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
             entity.Property(e => e.Password).HasMaxLength(50);
-            entity.Property(e => e.Pin)
-                .HasMaxLength(10)
-                .IsFixedLength();
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
             entity.Property(e => e.Username).HasMaxLength(50);
         });

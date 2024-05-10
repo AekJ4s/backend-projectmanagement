@@ -1,32 +1,32 @@
+
+
+using System.ComponentModel.DataAnnotations;
+using System.Data;
 using backend_ProjectManagement.Data;
 using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
 
 namespace backend_ProjectManagement.Models
 {
     public class UserMetadata
     {
-    public int Id { get; set; }
+        public int Id { get; set; }
 
-    public string? Username { get; set; }
+        public string? Username { get; set; }
 
-    public string? Password { get; set; }
+        public string? Password { get; set; }
 
-    public string? Pin { get; set; }
+        public int? Pin { get; set; }
 
-    public DateTime? CreateDate { get; set; }
+        public DateTime? CreateDate { get; set; }
 
-    public DateTime? UpdateDate { get; set; }
+        public DateTime? UpdateDate { get; set; }
 
-    public bool? IsDeleted { get; set; }
+        public bool? IsDeleted { get; set; }
 
-    public int? ProjectOwener { get; set; }
+        public int? ProjectOwener { get; set; }
 
-    public virtual Project? ProjectOwenerNavigation { get; set; }
+        public virtual Project? ProjectOwenerNavigation { get; set; }
     }
 
     public class UserCreate
@@ -35,7 +35,7 @@ namespace backend_ProjectManagement.Models
 
         public string? Password { get; set; }
 
-        public string? Pin { get; set; }
+        public int? Pin { get; set; }
 
     }
 
@@ -43,30 +43,36 @@ namespace backend_ProjectManagement.Models
 
     public partial class User
     {
-        public static User Create(DatabaseContext db, User user)
+        public static string Create(DatabaseContext db, User user)
         {
-            user.CreateDate = DateTime.Now;
-            user.UpdateDate = DateTime.Now;
-            user.IsDeleted = false;
-            db.Users.Add(user);
-            db.SaveChanges();
+            try
+            {
+                user.CreateDate = DateTime.Now;
+                user.UpdateDate = DateTime.Now;
+                user.IsDeleted = false;
+                db.Users.Add(user);
+                db.SaveChanges();
+                return "success";
 
-            return user;
+            }
+            catch (Exception e)
+            {      
+                return e.InnerException.Message;
+            }
+
         }
 
-        public static List<User> GetAll(DatabaseContext db)
+        public static List<User> GetAllUser(DatabaseContext db)
         {
             List<User> returnThis = db.Users.Where(q => q.IsDeleted != true).ToList();
             return returnThis;
         }
 
-        
-        public static User Update(DatabaseContext db, User user)
+        public static User UpdateUser(DatabaseContext db, User user)
         {
             user.UpdateDate = DateTime.Now;
             db.Entry(user).State = EntityState.Modified;
             db.SaveChanges();
-
             return user;
         }
 
@@ -86,6 +92,7 @@ namespace backend_ProjectManagement.Models
 
             return user;
         }
+
 
     }
 

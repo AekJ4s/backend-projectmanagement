@@ -26,7 +26,7 @@ public class ProjectController : ControllerBase
     {
         // .OrderBy(q => q.Salary) เรียงจากน้อยไปมาก
         // .OrderByDescending(q => q.Salary) เรียงจากมากไปน้อย
-        List<Project> projects = Project.GetAll(_db).OrderByDescending(q => q.Id).ToList();
+        List<Project> projects = Project.GetAll(_db);
         return Ok(projects);
     }
 
@@ -148,12 +148,15 @@ public class ProjectController : ControllerBase
                 Project.Update(_db, DataOfProject);
                 _db.SaveChanges();
                 // ส่งค่าสถานะการอัพเดทเป็น 200 OK
+                
                 return new Response
                 {
                     Code = 200,
                     Message = "Success",
                     Data = DataOfProject
                 };
+                
+                
            
             }
             else
@@ -180,7 +183,7 @@ public class ProjectController : ControllerBase
         }
     }
 
-
+// เปลี่ยน IsDeleted ของโปรเจคเป็น true และ กิจกรรมย่อยทั้งหมดเป็น true
     [HttpDelete(Name = "DeleteProject")]
     public ActionResult DeleteProduct(int id)
     {
