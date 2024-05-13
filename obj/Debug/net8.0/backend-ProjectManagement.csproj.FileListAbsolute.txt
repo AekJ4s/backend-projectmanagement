@@ -138,3 +138,5 @@ C:\Users\aek\Desktop\backend-ProjectManagement\bin\Debug\net8.0\runtimes\win\lib
 C:\Users\aek\Desktop\backend-ProjectManagement\obj\Debug\net8.0\backend-ProjectManagement.sourcelink.json
 C:\Users\aek\Desktop\backend-projectmanagement\bin\Debug\net8.0\Controllers\excamActivityInput.json
 c:\Users\aek\Desktop\backend-projectmanagement\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+c:\Users\aek\Desktop\backend-projectmanagement\bin\Debug\net8.0\package-lock.json
+c:\Users\aek\Desktop\backend-projectmanagement\bin\Debug\net8.0\package.json
