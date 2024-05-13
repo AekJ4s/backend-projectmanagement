@@ -58,7 +58,7 @@ namespace backend_ProjectManagement.Models
 
     }
 
-
+    
 
     [MetadataType(typeof(ProjectMetadata))]
 
@@ -101,6 +101,7 @@ namespace backend_ProjectManagement.Models
         public static Project Delete(DatabaseContext db, int id)
         {
             Project project = GetById(db, id);
+            
             project.IsDeleted = true;
             // db.Employees.Remove(employee); เป็นวิธีการลบแบบให้หายไปเลย
             db.Entry(project).State = EntityState.Modified; // Soft Delete

@@ -11,7 +11,7 @@ public partial class User
 
     public string? Password { get; set; }
 
-    public int? Pin { get; set; }
+    public string? Pin { get; set; }
 
     public DateTime? CreateDate { get; set; }
 

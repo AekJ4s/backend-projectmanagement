@@ -131,13 +131,25 @@ namespace backend_ProjectManagement.Models
         }
 
 
-        public static void GetALlActivityinside(ICollection<Activity> activity,DatabaseContext _db){
+        public static void GetALLActivityinside(ICollection<Activity> activity,DatabaseContext _db){
             foreach(Activity Data in activity){
                 
                 Data.InverseActivityHeader = _db.Activities.Where(i => i.ActivityHeaderId == Data.Id && i.IsDeleted != true).AsNoTracking().ToList();
                 if(Data.InverseActivityHeader.Count > 0){
-                    GetALlActivityinside(Data.InverseActivityHeader,_db);
+                    GetALLActivityinside(Data.InverseActivityHeader,_db);
                 }
+            }
+            return;
+        }
+
+        public static void DeleteActivityOfProject(ICollection<Activity> activity,DatabaseContext _db){
+             foreach(Activity Data in activity){
+                
+                Data.InverseActivityHeader = _db.Activities.Where(i => i.ActivityHeaderId == Data.Id && i.IsDeleted != true).AsNoTracking().ToList();
+                if(Data.InverseActivityHeader.Count > 0){
+                    DeleteActivityOfProject(Data.InverseActivityHeader,_db);
+                }
+                    Data.IsDeleted = true;
             }
             return;
         }

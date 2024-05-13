@@ -3,10 +3,12 @@
 
 using backend_ProjectManagement.Data;
 using backend_ProjectManagement.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("activities")]
+[Authorize]
 public class ActivityController : ControllerBase
 {
 

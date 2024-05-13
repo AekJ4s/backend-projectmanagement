@@ -35,8 +35,31 @@ namespace backend_ProjectManagement.Models
 
         public string? Password { get; set; }
 
-        public int? Pin { get; set; }
+        public string? Pin { get; set; }
 
+    }
+
+    public class UserEditer{
+        public string? Username { get; set; }
+
+        public string? Password { get; set; }
+
+        public string? Pin { get; set; }
+
+        public string? NewPassword {get; set;}
+
+        public string? NewPin{get; set;}
+
+
+    }
+
+    public class UserLogin
+    {
+        public string? Username { get; set; }
+
+        public string? Password { get; set; }
+
+        public string? Pin { get; set; }
     }
 
     [MetadataType(typeof(UserMetadata))]
@@ -68,7 +91,7 @@ namespace backend_ProjectManagement.Models
             return returnThis;
         }
 
-        public static User UpdateUser(DatabaseContext db, User user)
+        public static User EditPassword(DatabaseContext db, User user)
         {
             user.UpdateDate = DateTime.Now;
             db.Entry(user).State = EntityState.Modified;

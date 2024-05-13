@@ -5,8 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using backend_ProjectManagement.Models;
 using Microsoft.AspNetCore.Identity;
 [ApiController]
-
 [Route("projects")]
+[Authorize]
+
 public class ProjectController : ControllerBase
 {
 
@@ -47,7 +48,7 @@ public class ProjectController : ControllerBase
             // วนลูปผ่านกิจกรรมในโปรเจคและเรียกใช้เมธอด TakeActivity
             foreach (Activity activity in DataOfProject.Activities)
             {
-                Activity.GetALlActivityinside(DataOfProject.Activities, _db); //ไปวนหาว่ามีลูกอีกไหม
+                Activity.GetALLActivityinside(DataOfProject.Activities, _db); //ไปวนหาว่ามีลูกอีกไหม
             }
         }
         else
@@ -92,8 +93,8 @@ public class ProjectController : ControllerBase
         {
             // สร้างกิจกรรมสำหรับโปรเจ็คใหม่
 
-                Activity.SendActivities(project, project.Activities, projectCreate.Activities);
-            
+            Activity.SendActivities(project, project.Activities, projectCreate.Activities);
+
 
             // บันทึกโปรเจ็คลงในฐานข้อมูล
             Project.Create(_db, project);
@@ -126,13 +127,13 @@ public class ProjectController : ControllerBase
 
         Project? DataOfProject = _db.Projects.Find(NewData.Id);
         //ถ้ามีข้อมูล
-        if (NewData != null)
+        if (NewData != null && DataOfProject != null)
         {
             // ให้นำข้อมูลไปหากิจกรรมภายใน
             foreach (Activity activity in NewData.Activities)
             {
                 //ส่งข้อมูลกิจกรรมให้ไปค้นหากินกรรมย่อย
-                Activity.TakeActivity(null,DataOfProject,activity, _db);
+                Activity.TakeActivity(null, DataOfProject, activity, _db);
             }
             // ถ้ามีข้อมูลโปรเจค
             if (DataOfProject != null)
@@ -148,26 +149,26 @@ public class ProjectController : ControllerBase
                 Project.Update(_db, DataOfProject);
                 _db.SaveChanges();
                 // ส่งค่าสถานะการอัพเดทเป็น 200 OK
-                
+
                 return new Response
                 {
                     Code = 200,
                     Message = "Success",
                     Data = DataOfProject
                 };
-                
-                
-           
+
+
+
             }
             else
-            return new Response
+                return new Response
                 {
                     Code = 400,
                     Message = "Bad Request",
                     Data = null
                 };
-            
-           
+
+
         }
         else
         {
@@ -183,12 +184,51 @@ public class ProjectController : ControllerBase
         }
     }
 
-// เปลี่ยน IsDeleted ของโปรเจคเป็น true และ กิจกรรมย่อยทั้งหมดเป็น true
+    // เปลี่ยน IsDeleted ของโปรเจคเป็น true และ กิจกรรมย่อยทั้งหมดเป็น true
     [HttpDelete(Name = "DeleteProject")]
-    public ActionResult DeleteProduct(int id)
+    public ActionResult<Response> DeleteProduct(int id)
     {
-        Project product = Project.Delete(_db, id);
-        return Ok(product);
-    }
+        // ค้นหาโปรเจคจากฐานข้อมูลโดยใช้ Id
+        Project? DataOfProject = _db.Projects.Find(id);
 
+        // ตรวจสอบว่าโปรเจคที่ค้นหาพบหรือไม่
+        if (DataOfProject != null)
+        {
+            // ค้นหากิจกรรมที่เกี่ยวข้องกับโปรเจค
+            DataOfProject.Activities = _db.Activities
+                .Where(useinit => useinit.ProjectId == id && useinit.ActivityHeaderId == null && useinit.IsDeleted != true)
+                .ToList();
+
+            // วนลูปผ่านกิจกรรมในโปรเจคและเรียกใช้เมธอด TakeActivity
+            foreach (Activity activity in DataOfProject.Activities)
+            {
+                Activity.DeleteActivityOfProject(DataOfProject.Activities, _db); //ไปวนหาว่ามีลูกอีกไหม
+            }
+
+            // ถ้ามีข้อมูลโปรเจค
+                DataOfProject.IsDeleted = true;
+                // บันทึกการอัพเดทลงในฐานข้อมูล
+                Project.Update(_db, DataOfProject);
+                _db.SaveChanges();
+                // ส่งค่าสถานะการอัพเดทเป็น 200 OK
+                return new Response
+                {
+                    Code = 200,
+                    Message = "Success",
+                    Data = DataOfProject
+                };
+            
+            
+
+        }
+        else
+            return new Response
+            {
+                Code = 400,
+                Message = "หาโปรเจคไม่เจอ หรือว่าถูกลบไปแล้ว",
+                Data = null
+            };
+
+        
+    }
 }

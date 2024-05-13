@@ -54,16 +54,12 @@ public partial class DatabaseContext : DbContext
 
         modelBuilder.Entity<FileUpload>(entity =>
         {
-            entity
-                .HasNoKey()
-                .ToTable("FileUpload");
+            entity.ToTable("FileUpload");
 
+            entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
             entity.Property(e => e.FileName).HasMaxLength(50);
             entity.Property(e => e.FilePath).HasMaxLength(50);
-            entity.Property(e => e.Id)
-                .ValueGeneratedOnAdd()
-                .HasColumnName("ID");
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
         });
 
@@ -107,6 +103,7 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.Id).HasColumnName("ID");
             entity.Property(e => e.CreateDate).HasColumnType("datetime");
             entity.Property(e => e.Password).HasMaxLength(50);
+            entity.Property(e => e.Pin).HasMaxLength(50);
             entity.Property(e => e.UpdateDate).HasColumnType("datetime");
             entity.Property(e => e.Username).HasMaxLength(50);
         });
