@@ -70,7 +70,7 @@ public class UserController : ControllerBase
 
     [HttpPost("login")]
 
-    public ActionResult<Response> Login([FromBody] UserLogin requestUser)
+    public ActionResult<Response> Login([FromBody] User requestUser)
     {
         User? user = _db.Users.FirstOrDefault(x => x.Username == requestUser.Username && x.IsDeleted == false);
         string bearerToken = "";
