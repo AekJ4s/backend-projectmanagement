@@ -72,19 +72,6 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
   
-    if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-        
-    }
-       //app cors
-        app.UseHttpsRedirection();
-        app.UseRouting();
-        app.UseCors("corsapp");
-        app.UseAuthorization();
-// Swagger for take Tokens
-
 if (app.Environment.IsDevelopment())
     {
         app.UseSwagger();
