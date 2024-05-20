@@ -16,7 +16,10 @@ builder.Services.AddControllers().AddJsonOptions(option => option.JsonSerializer
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-
+builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
+  {
+      builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+  }));
 // Swagger for take Tokens
 builder.Services.AddSwaggerGen(c =>
 {
@@ -71,18 +74,18 @@ builder.Services.AddAuthentication(x =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-  
+
 if (app.Environment.IsDevelopment())
-    {
-        app.UseSwagger();
-        app.UseSwaggerUI();
-        
-    }
-       //app cors
-        app.UseHttpsRedirection();
-        app.UseRouting();
-        app.UseCors("corsapp");
-        // Swagger for take Tokens
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+//app cors
+app.UseHttpsRedirection();
+app.UseRouting();
+app.UseCors("corsapp");
+// Swagger for take Tokens
+
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();

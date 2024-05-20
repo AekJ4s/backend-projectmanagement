@@ -34,6 +34,8 @@ namespace backend_ProjectManagement.Models
 
         public string? Name { get; set; }
 
+        public int? OwnerId { get; set; }
+
         public string? Detail { get; set; }
 
         public DateTime? StartDate { get; set; }

@@ -90,13 +90,15 @@ public class UserController : ControllerBase
             {
                 bearerToken = GenerateToken(user);
             }
-            else{
+            else
+            {
                 return BadRequest(new Response
                 {
                     Code = 400,
                     Message = "user password or pin is wrong or all are wrong",
-                    Data = user 
-                });}
+                    Data = user
+                });
+            }
         }
         catch
         {
@@ -106,8 +108,14 @@ public class UserController : ControllerBase
         {
             Code = 200,
             Message = "Success",
-            Data = bearerToken,
+            Data = new Dictionary<string, object>
+    {
+        { "BearerToken", bearerToken },
+        { "UserId", user.Id },
+        { "UserName", user.Username }
+    }
         });
+
     }
 
     [HttpGet("User", Name = "ShowAllUsers")]

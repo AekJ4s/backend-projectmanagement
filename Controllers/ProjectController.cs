@@ -84,6 +84,7 @@ public class ProjectController : ControllerBase
         Project project = new Project
         {
             Name = projectCreate.Name,        // รับค่าชื่อจาก projectCreate.Name
+            OwnerId = projectCreate.OwnerId,
             Detail = projectCreate.Detail,    // รับค่ารายละเอียดจาก projectCreate.Detail
             StartDate = projectCreate.StartDate,  // รับค่าวันที่เริ่มต้นจาก projectCreate.StartDate
             EndDate = projectCreate.EndDate       // รับค่าวันที่สิ้นสุดจาก projectCreate.EndDate
