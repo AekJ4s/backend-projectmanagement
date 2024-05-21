@@ -23,42 +23,72 @@ public class FileUploadController : ControllerBase
     }
 
     [HttpPost(Name = "UploadFile")]
-    public ActionResult UploadFile(IFormFile formFile)
+    public ActionResult UploadFile([FromForm] List<IFormFile> formFiles)
     {
-        if(formFile == null)
+        if(formFiles == null || formFiles.Count == 0)
         {
             return BadRequest(new Response
             {
                 Code = 400,
                 Message = "File is Required"
+                
             });
         }
 
-        FileUpload file = new FileUpload
+        List<FileUpload> uploadedFiles = new List<FileUpload>();
+        
+        foreach(var formFile in formFiles)
         {
-            FileName = formFile.FileName,
-            FilePath = "UploadedFile/ProfileImg/"
-        };
-
-        file = FileUpload.Create(_db,file);
-
-        if(formFile != null && formFile.Length >0){
-            string upload = Path.Combine(_hostingEnvironment.ContentRootPath, "UploadedFile/ProfileImg/" + file.Id);
-
-            Directory.CreateDirectory(upload);
-            string filePath = Path.Combine(upload,formFile.FileName);
-            using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+            var file = new FileUpload
             {
-                formFile.CopyTo(fileStream);
+                FileName = formFile.FileName,
+                FilePath = "UploadedFile/ProfileImg/"
+            };
+
+            file = FileUpload.Create(_db,file);
+            uploadedFiles.Add(file);
+
+            if(formFile.Length > 0)
+            {
+                string upload = Path.Combine(_hostingEnvironment.ContentRootPath,"UploadedFile/ProfileImg/", file.Id.ToString());
+                Directory.CreateDirectory(upload);
+                string filePath = Path.Combine(upload, formFile.FileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    formFile.CopyTo(fileStream);
+                }
             }
-
-           
         }
-         return Ok(new Response
-            {
-                Code = 200,
-                Message = "Success",
-                Data = file
-            });
+
+        return Ok(new Response
+        {
+            Code = 200,
+            Message = "Upload File Success",
+            Data = uploadedFiles
+        });
     }
 }
+      
+
+       
+
+//         if(formFile != null && formFile.Length >0){
+//             string upload = Path.Combine(_hostingEnvironment.ContentRootPath, "UploadedFile/ProfileImg/" + file.Id);
+
+//             Directory.CreateDirectory(upload);
+//             string filePath = Path.Combine(upload,formFile.FileName);
+//             using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+//             {
+//                 formFile.CopyTo(fileStream);
+//             }
+
+           
+//         }
+//          return Ok(new Response
+//             {
+//                 Code = 200,
+//                 Message = "Success",
+//                 Data = file
+//             });
+//     }
+// }
