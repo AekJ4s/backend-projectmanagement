@@ -26,4 +26,6 @@ public partial class Project
     public virtual ICollection<Activity> Activities { get; set; } = new List<Activity>();
 
     public virtual User? Owner { get; set; }
+
+    public virtual ICollection<ProjectWithFile> ProjectWithFiles { get; set; } = new List<ProjectWithFile>();
 }

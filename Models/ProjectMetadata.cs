@@ -60,20 +60,37 @@ namespace backend_ProjectManagement.Models
 
     }
 
+    public class ProjectCreateWithFile
+    {
+
+        public string? Name { get; set; }
+
+        public int? OwnerId { get; set; }
+
+        public string? Detail { get; set; }
+
+        public DateTime? StartDate { get; set; }
+
+        public DateTime? EndDate { get; set; }
+        public List<Activity> Activities { get; set; } = new List<Activity>();
+
+        public List<ProjectWithFile> File { get; set; } = new List<ProjectWithFile>();
+
+    }
+
     
 
     [MetadataType(typeof(ProjectMetadata))]
 
     public partial class Project
     {
-        public static Project Create(DatabaseContext db, Project project)
+        public static Project Create(DatabaseContext db, Project project,FileUpload file)
         {
             project.CreateDate = DateTime.Now;
             project.UpdateDate = DateTime.Now;
             project.IsDeleted = false;
             db.Projects.Add(project);
             db.SaveChanges();
-
             return project;
         }
 
@@ -111,14 +128,6 @@ namespace backend_ProjectManagement.Models
 
             return project;
         }
-
-        
-
     }
-
-
-
-
-
 
 }

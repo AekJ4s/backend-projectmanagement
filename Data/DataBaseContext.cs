@@ -92,6 +92,10 @@ public partial class DatabaseContext : DbContext
             entity.HasOne(d => d.File).WithMany(p => p.InverseFile)
                 .HasForeignKey(d => d.FileId)
                 .HasConstraintName("FK_FID");
+
+            entity.HasOne(d => d.Project).WithMany(p => p.ProjectWithFiles)
+                .HasForeignKey(d => d.ProjectId)
+                .HasConstraintName("FK_PJID");
         });
 
         modelBuilder.Entity<User>(entity =>

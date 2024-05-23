@@ -19,8 +19,6 @@ public class ProjectController : ControllerBase
         _logger = logger;
     }
 
-
-
     [HttpGet(Name = "ShowAllProjects")]
 
     public ActionResult GetAll()
@@ -72,52 +70,6 @@ public class ProjectController : ControllerBase
         {
             // หากเกิดข้อผิดพลาดในการส่งข้อมูล คืนค่า StatusCode 500 (Internal Server Error)
             return (StatusCode(500));
-        }
-    }
-
-
-
-    [HttpPost("CreateProject", Name = "")]
-    public ActionResult<Response> Create(ProjectCreate projectCreate)
-    {
-        // สร้างโปรเจ็คใหม่
-        Project project = new Project
-        {
-            Name = projectCreate.Name,        // รับค่าชื่อจาก projectCreate.Name
-            OwnerId = projectCreate.OwnerId,
-            Detail = projectCreate.Detail,    // รับค่ารายละเอียดจาก projectCreate.Detail
-            StartDate = projectCreate.StartDate,  // รับค่าวันที่เริ่มต้นจาก projectCreate.StartDate
-            EndDate = projectCreate.EndDate       // รับค่าวันที่สิ้นสุดจาก projectCreate.EndDate
-        };
-
-        try
-        {
-            // สร้างกิจกรรมสำหรับโปรเจ็คใหม่
-
-            Activity.SendActivities(project, project.Activities, projectCreate.Activities);
-
-
-            // บันทึกโปรเจ็คลงในฐานข้อมูล
-            Project.Create(_db, project);
-            _db.SaveChanges();
-
-            // สร้างข้อมูลการตอบกลับสำหรับการสร้างโปรเจ็คสำเร็จ
-            return Ok(new Response
-            {
-                Code = 200,
-                Message = "Success",
-                Data = project
-            });
-        }
-        catch
-        {
-            // หากเกิดข้อผิดพลาดในการสร้างโปรเจ็ค คืนค่าข้อมูลการตอบกลับสำหรับข้อผิดพลาดภายในเซิร์ฟเวอร์
-            return new Response
-            {
-                Code = 500,
-                Message = "Internal Server Error",
-                Data = null
-            };
         }
     }
     [HttpPut(Name = "ProjectUpdate")]

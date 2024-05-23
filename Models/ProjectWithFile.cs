@@ -11,7 +11,11 @@ public partial class ProjectWithFile
 
     public int? FileId { get; set; }
 
+    public bool? IsDeleted { get; set; }
+
     public virtual ProjectWithFile? File { get; set; }
 
     public virtual ICollection<ProjectWithFile> InverseFile { get; set; } = new List<ProjectWithFile>();
+
+    public virtual Project? Project { get; set; }
 }
