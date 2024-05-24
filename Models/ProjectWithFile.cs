@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using backend_ProjectManagement.Data;
 
 namespace backend_ProjectManagement.Models;
 
@@ -13,9 +14,8 @@ public partial class ProjectWithFile
 
     public bool? IsDeleted { get; set; }
 
-    public virtual ProjectWithFile? File { get; set; }
-
-    public virtual ICollection<ProjectWithFile> InverseFile { get; set; } = new List<ProjectWithFile>();
+    public virtual FileUpload? File { get; set; }
 
     public virtual Project? Project { get; set; }
+
 }

@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
@@ -48,6 +49,7 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
+
 
 var config = builder.Configuration;
 

@@ -89,7 +89,7 @@ public partial class DatabaseContext : DbContext
             entity.Property(e => e.FileId).HasColumnName("FileID");
             entity.Property(e => e.ProjectId).HasColumnName("ProjectID");
 
-            entity.HasOne(d => d.File).WithMany(p => p.InverseFile)
+            entity.HasOne(d => d.File).WithMany(p => p.ProjectWithFiles)
                 .HasForeignKey(d => d.FileId)
                 .HasConstraintName("FK_FID");
 

@@ -16,4 +16,6 @@ public partial class FileUpload
     public DateTime? UpdateDate { get; set; }
 
     public bool? IsDeleted { get; set; }
+
+    public virtual ICollection<ProjectWithFile> ProjectWithFiles { get; set; } = new List<ProjectWithFile>();
 }

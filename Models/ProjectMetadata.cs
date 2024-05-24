@@ -38,10 +38,13 @@ namespace backend_ProjectManagement.Models
 
         public string? Detail { get; set; }
 
-        public DateTime? StartDate { get; set; }
+        public string? StartDate { get; set; }
 
-        public DateTime? EndDate { get; set; }
-        public List<Activity> Activities { get; set; } = new List<Activity>();
+        public string? EndDate { get; set; }
+        public string? Activities { get; set; }
+
+        public virtual ICollection<ProjectWithFile>? ProjectWithFiles { get; set; } = new List<ProjectWithFile>();
+
 
     }
 
@@ -60,37 +63,53 @@ namespace backend_ProjectManagement.Models
 
     }
 
-    public class ProjectCreateWithFile
+    public class CreateProjectWithFile
     {
 
-        public string? Name { get; set; }
+        public required ProjectCreate ProjectCreate { get; set; }
 
-        public int? OwnerId { get; set; }
-
-        public string? Detail { get; set; }
-
-        public DateTime? StartDate { get; set; }
-
-        public DateTime? EndDate { get; set; }
-        public List<Activity> Activities { get; set; } = new List<Activity>();
-
-        public List<ProjectWithFile> File { get; set; } = new List<ProjectWithFile>();
+        public List<IFormFile>? Files { get; set; }
 
     }
 
-    
+
+    public class ProjectUpdateModel
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public string OwnerId { get; set; }
+        public string Detail { get; set; }
+        public string StartDate { get; set; }
+        public string EndDate { get; set; }
+        public string Activities { get; set; }
+        public virtual ICollection<ProjectWithFile>? ProjectWithFiles { get; set; } = new List<ProjectWithFile>();
+
+    }
+
 
     [MetadataType(typeof(ProjectMetadata))]
 
     public partial class Project
     {
-        public static Project Create(DatabaseContext db, Project project,FileUpload file)
+        public static Project Create(DatabaseContext db, Project project, FileUpload file)
         {
+            // ตั้งค่าวันที่สร้างและวันที่อัพเดทสำหรับโปรเจ็ค
             project.CreateDate = DateTime.Now;
             project.UpdateDate = DateTime.Now;
             project.IsDeleted = false;
+
+            // ตั้งค่าวันที่สร้างและวันที่อัพเดทสำหรับไฟล์
+            file.CreateDate = DateTime.Now;
+            file.UpdateDate = DateTime.Now;
+            file.IsDeleted = false;
+
+            // เพิ่มโปรเจ็คและไฟล์ลงในฐานข้อมูล
             db.Projects.Add(project);
+            db.FileUploads.Add(file);
+
+            // บันทึกการเปลี่ยนแปลงในฐานข้อมูล
             db.SaveChanges();
+
             return project;
         }
 
@@ -120,7 +139,7 @@ namespace backend_ProjectManagement.Models
         public static Project Delete(DatabaseContext db, int id)
         {
             Project project = GetById(db, id);
-            
+
             project.IsDeleted = true;
             // db.Employees.Remove(employee); เป็นวิธีการลบแบบให้หายไปเลย
             db.Entry(project).State = EntityState.Modified; // Soft Delete

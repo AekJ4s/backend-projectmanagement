@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using backend_ProjectManagement.Data;
 using backend_ProjectManagement.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -42,7 +43,7 @@ public class FileUploadController : ControllerBase
             var file = new FileUpload
             {
                 FileName = formFile.FileName,
-                FilePath = "UploadedFile/ProfileImg/"
+                FilePath = "UploadedFile/ProfileImg"
             };
 
             file = FileUpload.Create(_db,file);
@@ -67,7 +68,51 @@ public class FileUploadController : ControllerBase
             Data = uploadedFiles
         });
     }
+
+     
+
+
+
+     [HttpGet("GetBy/{id}", Name = "GetFileById")]
+    public ActionResult<Response> GetFileId(int id)
+    {
+        try
+        {
+            List<FileUpload> fileOfProject = FileUpload.GetById(_db, id); // ได้ไฟล์ที่เกี่ยวข้องกับโปรเจคทุกอย่างแล้ว
+
+            // ตรวจสอบว่าโปรเจคที่ค้นหาพบหรือไม่
+            if (fileOfProject == null)
+            {
+                return NotFound(new Response
+                {
+                    Code = 404,
+                    Message = "Project not found or has been deleted"
+                });
+            }
+
+            // ส่งข้อมูลโปรเจคกลับไปยังไคลเอนต์
+            return Ok(new Response
+            {
+                Code = 200,
+                Message = "Success",
+                Data = fileOfProject
+            });
+        }
+        catch (Exception e)
+        {
+            // หากเกิดข้อผิดพลาดในการส่งข้อมูล คืนค่า StatusCode 500 (Internal Server Error)
+            return StatusCode(500, new Response
+            {
+                Code = 500,
+                Message = "Internal server error: " + e.Message
+            });
+        }
+    }
+
+    
 }
+
+
       
 
        

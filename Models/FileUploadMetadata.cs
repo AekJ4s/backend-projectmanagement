@@ -36,5 +36,14 @@ namespace backend_ProjectManagement.Models
 
             return file;
         }
+
+         public static List<FileUpload> GetById(DatabaseContext db, int id)
+        {   
+            List<FileUpload>? file = db.FileUploads
+                                    .Where(q => q.Id == id && q.IsDeleted != true).ToList();
+            return file; // คืนค่าโปรเจคพร้อมกับข้อมูลกิจกรรมหรือสร้างโปรเจคใหม่หากไม่พบ
+        }
+
+      
     }
 }

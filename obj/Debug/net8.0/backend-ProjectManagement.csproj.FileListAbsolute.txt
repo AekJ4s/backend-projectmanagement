@@ -140,3 +140,4 @@ C:\Users\aek\Desktop\backend-projectmanagement\bin\Debug\net8.0\Controllers\exca
 c:\Users\aek\Desktop\backend-projectmanagement\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 c:\Users\aek\Desktop\backend-projectmanagement\bin\Debug\net8.0\package-lock.json
 c:\Users\aek\Desktop\backend-projectmanagement\bin\Debug\net8.0\package.json
+c:\Users\aek\Desktop\backend-projectmanagement\bin\Debug\net8.0\Newtonsoft.Json.dll
