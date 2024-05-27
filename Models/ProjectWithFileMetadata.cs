@@ -68,10 +68,20 @@ namespace backend_ProjectManagement.Models
             return file; // คืนค่าโปรเจคพร้อมกับข้อมูลกิจกรรมหรือสร้างโปรเจคใหม่หากไม่พบ
         }
 
-         public static ProjectWithFile Delete(DatabaseContext db, ProjectWithFile file)
-        {   
-            file.IsDeleted = true ;
-            return file; // คืนค่าโปรเจคพร้อมกับข้อมูลกิจกรรมหรือสร้างโปรเจคใหม่หากไม่พบ
+        public static ProjectWithFile GetOnlyThis(DatabaseContext db , int id){
+            ProjectWithFile? file = db.ProjectWithFiles.Where(q => q.Id == id ).FirstOrDefault();
+            return file;
         }
+
+         
+
+        
+        public static ProjectWithFile Update(DatabaseContext db, ProjectWithFile project)
+        {
+            db.Entry(project).State = EntityState.Modified;
+            db.SaveChanges();
+            return project;
+        }
+
     }
 }

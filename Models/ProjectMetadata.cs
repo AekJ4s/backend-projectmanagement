@@ -48,19 +48,30 @@ namespace backend_ProjectManagement.Models
 
     }
 
-    public struct ProjectUpdate
+    public class ProjectUpdate
 
     {
+        public int? Id { get; set; }
+        public string? Name { get; set; }
 
-        public int Id { get; set; }
-        public string Name { get; set; }
+        public int? OwnerId { get; set; }
 
         public string? Detail { get; set; }
 
-        public DateTime? StartDate { get; set; }
+        public string? StartDate { get; set; }
 
-        public DateTime? EndDate { get; set; }
+        public string? EndDate { get; set; }
+        public string? Activities { get; set; }
 
+        public string? ProjectWithFiles { get; set; } 
+
+    }
+
+    public class UpdateProjectWithFile {
+
+        public required ProjectUpdate projectUpdate { get; set; }
+
+        public List<IFormFile>? Files { get; set; }
     }
 
     public class CreateProjectWithFile
