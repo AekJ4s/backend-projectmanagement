@@ -43,64 +43,77 @@ public class ProjectController : ControllerBase
             IsDeleted = false
         };
 
-        using (var transaction = _db.Database.BeginTransaction())
-        {
-            // เพิ่มกิจกรรมใหม่ในโปรเจ็ค
-            Activity.SendActivities(newProject, newProject.Activities, activitys);
-            _db.Projects.Add(newProject);
-            _db.SaveChanges(); // บันทึก newProject ก่อนเพื่อให้ได้ Id
+        var samename = _db.Projects.Where(p => p.Name == projectCreate.Name && p.IsDeleted != true).ToList();
 
-            if (files != null)
+                 if (samename.Count > 0){
+                    return BadRequest(new Response{
+                        Code = 400,
+                        Message = " มีโปรเจคอยู่แล้ว ",
+                        Data = null 
+                    });
+                 }
+
+       
+            using (var transaction = _db.Database.BeginTransaction())
             {
-                foreach (var file in files)
+
+                // เพิ่มกิจกรรมใหม่ในโปรเจ็ค
+                Activity.SendActivities(newProject, newProject.Activities, activitys);
+                _db.Projects.Add(newProject);
+        
+                _db.SaveChanges(); // บันทึก newProject ก่อนเพื่อให้ได้ Id
+
+                if (files != null)
                 {
-                    var newFile = new FileUpload
+                    foreach (var file in files)
                     {
-                        FileName = file.FileName,
-                        FilePath = "UploadedFile/ProfileImg/",
-                        CreateDate = DateTime.Now,
-                        UpdateDate = DateTime.Now,
-                        IsDeleted = false
-                    };
-
-                    newFile = FileUpload.Create(_db, newFile);
-
-                    if (file.Length > 0)
-                    {
-                        string upload = Path.Combine(_hostingEnvironment.ContentRootPath, "UploadedFile/ProfileImg/", newFile.Id.ToString());
-                        Directory.CreateDirectory(upload);
-                        string filePath = Path.Combine(upload, file.FileName);
-                        using (var fileStream = new FileStream(filePath, FileMode.Create))
+                        var newFile = new FileUpload
                         {
-                            file.CopyTo(fileStream);
+                            FileName = file.FileName,
+                            FilePath = "UploadedFile/ProfileImg/",
+                            CreateDate = DateTime.Now,
+                            UpdateDate = DateTime.Now,
+                            IsDeleted = false
+                        };
+
+                        newFile = FileUpload.Create(_db, newFile);
+
+                        if (file.Length > 0)
+                        {
+                            string upload = Path.Combine(_hostingEnvironment.ContentRootPath, "UploadedFile/ProfileImg/", newFile.Id.ToString());
+                            Directory.CreateDirectory(upload);
+                            string filePath = Path.Combine(upload, file.FileName);
+                            using (var fileStream = new FileStream(filePath, FileMode.Create))
+                            {
+                                file.CopyTo(fileStream);
+                            }
                         }
+                        _db.SaveChanges(); // บันทึก newFile แต่ละไฟล์ก่อนเพื่อให้ได้ Id
+
+                        ProjectWithFile projectXfile = new ProjectWithFile
+                        {
+                            ProjectId = newProject.Id, // ใช้ Id ของ newProject
+                            FileId = newFile.Id, // ใช้ Id ของ newFile
+                            IsDeleted = false, // กำหนดค่าว่ายังไม่ถูก Delete
+                        };
+
+                        _db.ProjectWithFiles.Add(projectXfile);
                     }
-                    _db.SaveChanges(); // บันทึก newFile แต่ละไฟล์ก่อนเพื่อให้ได้ Id
 
-                    ProjectWithFile projectXfile = new ProjectWithFile
-                    {
-                        ProjectId = newProject.Id, // ใช้ Id ของ newProject
-                        FileId = newFile.Id, // ใช้ Id ของ newFile
-                        IsDeleted = false, // กำหนดค่าว่ายังไม่ถูก Delete
-                    };
-
-                    _db.ProjectWithFiles.Add(projectXfile);
                 }
+                else files = null;
+                _db.SaveChanges(); // บันทึกการเปลี่ยนแปลงทั้งหมด
 
+                transaction.Commit(); // ยืนยัน transaction
+
+                return Ok(new Response
+                {
+                    Code = 200,
+                    Message = "Success",
+                    Data = newProject
+                });
             }
-            else files = null;
-            _db.SaveChanges(); // บันทึกการเปลี่ยนแปลงทั้งหมด
-
-            transaction.Commit(); // ยืนยัน transaction
-
-            return Ok(new Response
-            {
-                Code = 200,
-                Message = "Success",
-                Data = newProject
-            });
-
-        }
+              
     }
 
 
@@ -195,6 +208,15 @@ public class ProjectController : ControllerBase
             var ProjectXFiles = JsonConvert.DeserializeObject<List<ProjectWithFile>>(Request.ProjectWithFiles);
             var activitys = JsonConvert.DeserializeObject<List<Activity>>(Request.Activities);
             
+            var samename = _db.Projects.Where(db => db.Name == Request.Name && db.IsDeleted != true && db.Id != Request.Id).ToList();
+
+                 if (samename.Count > 0){
+                    return BadRequest(new Response{
+                        Code = 400,
+                        Message = " ชื่อนี้ถูกใช้อยู่แล้ว ไม่สามารถแก้ไขได้ ",
+                    });
+                 }
+
             if (projectUpdate.Activities != null)
             {
                 using (var transaction = _db.Database.BeginTransaction())
@@ -269,7 +291,7 @@ public class ProjectController : ControllerBase
             {
                 // ตรวจสอบฟีลแต่ละฟีลและอัพเดตข้อมูล
                 projectUpdate.Name = (string.IsNullOrEmpty(Request.Name) || Request.Name == "string") ? projectUpdate.Name : Request.Name;
-                projectUpdate.Detail = (string.IsNullOrEmpty(Request.Detail) || Request.Detail == "string") ? projectUpdate.Detail : Request.Detail;
+                projectUpdate.Detail = (Request.Detail == "string") ? projectUpdate.Detail : Request.Detail;
                 projectUpdate.StartDate = (Request.StartDate == null) ? projectUpdate.StartDate : DateTime.Parse(Request.StartDate);
                 projectUpdate.EndDate = (Request.EndDate == null) ? projectUpdate.EndDate : DateTime.Parse(Request.EndDate);
                 projectUpdate.UpdateDate = DateTime.Now;

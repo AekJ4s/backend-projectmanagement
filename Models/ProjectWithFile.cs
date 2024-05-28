@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using backend_ProjectManagement.Data;
 
 namespace backend_ProjectManagement.Models;
 
@@ -17,5 +16,4 @@ public partial class ProjectWithFile
     public virtual FileUpload? File { get; set; }
 
     public virtual Project? Project { get; set; }
-
 }
